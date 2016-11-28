@@ -26,3 +26,21 @@ app.listen(appEnv.port, '0.0.0.0', function() {
   // print a message when the server starts listening
   console.log("server starting on " + appEnv.url);
 });
+
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+app.get('/chat', function(req, res){
+  res.sendfile(__dirname + '/public/views/chat-view.html');
+});
+
+io.on('connection', function(socket){
+  socket.on('chat message', function(msg){
+    console.log('message: ' + msg);
+    io.emit('chat message', msg);
+  });
+});
+
+http.listen(6001, function(){
+  console.log('listening on *:6001');
+});
