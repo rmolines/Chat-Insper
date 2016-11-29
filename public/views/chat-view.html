@@ -180,7 +180,7 @@
                      <li class="left clearfix">
                      <span class="chat-img1 pull-left">
                      </span>
-                     <div class="chat-body1 clearfix">
+                     <div id="div1" class="chat-body1 clearfix">
                          <p>Nm hbu?</p>
     					<div class="chat_time pull-right">09:40PM</div>
                      </div>
@@ -191,14 +191,9 @@
 		 </ul>
 		 </div><!--chat_area-->
           <div class="message_write">
-            <form action="">
-              <input class="form-control" id="m" autocomplete="off" /><button>Send</button>
-            </form>
+        	 <textarea id="m" class="form-control" placeholder="type a message"></textarea>
 		 <div class="clearfix"></div>
-		 <div class="chat_bottom"><a href="#" class="pull-left upload_btn"><i class="fa fa-cloud-upload" aria-hidden="true"></i>
- Add Files</a>
- <a href="#" class="pull-right btn btn-success">
- Send</a></div>
+      <a class="pull-right btn btn-success" onclick="sendMessage()">Send</a></div>
 		 </div>
 		 </div>
          </div> <!--message_section-->
@@ -221,13 +216,27 @@
             var msg = document.getElementById('m').value;
             if(msg){
                 socket.emit('msg', {message: msg, user: user});
+                $('#m').val('');
             };
         };
+
         socket.on('newmsg', function(data){
-            if(user){
+            var minutes = 1000 * 60;
+            var hours = minutes * 60;
+            var days = hours * 24;
+            var years = days * 365;
+            var d = new Date();
+            var t = d.getTime();
+
+            var y = Math.round(t / years);
+
+            var div1 = $("#div1");
+            var div2 = $("#div2");
+            var div3 = $("<li>")
+                if(true){
                 //document.getElementById('message-container').innerHTML += '<div><b>' + data.user + '</b>: ' + data.message + '</div>'
-                $('#messages').append($('<li>').text(data.message));
-          };
+                //$('#messages').append(div1, div3.data.message,div2, y);
+        }
         });
     </script>
   </body>

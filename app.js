@@ -27,6 +27,8 @@ app.listen(appEnv.port, '0.0.0.0', function() {
   console.log("server starting on " + appEnv.url);
 });
 
+app.set('port', process.env.PORT || 6001);
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -53,10 +55,13 @@ io.on('connection', function(socket){
   })
     socket.on('msg', function(data){
       //Send message to everyone
-      io.emit('newmsg', data);
+      io.emit('newmsg', {
+        message: data.message,
+        user: users[0]
+      });
   })
 });
 
 http.listen(6001, function(){
-  console.log('listening on *:6001');
+  console.log(app.get('port'));
 });
