@@ -33,17 +33,18 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.get('/chat', function(req, res){
-  res.sendfile(__dirname + '/public/views/chat-view.html');
+  res.sendFile(__dirname + '/public/views/chat-view.html');
 });
 
 app.get('/login', function(req, res){
-  res.sendfile(__dirname + '/public/views/login-view.html');
+  res.sendFile(__dirname + '/public/views/login-view.html');
 });
 
 users = [];
 
 io.on('connection', function(socket){
   console.log('A user connected');
+
   socket.on('setUsername', function(data){
     if(users.indexOf(data) > -1){
       socket.emit('userExists', data + ' username is taken! Try some other username.');
@@ -53,11 +54,12 @@ io.on('connection', function(socket){
       socket.emit('userSet', {username: data});
     }
   })
+
     socket.on('msg', function(data){
       //Send message to everyone
       io.emit('newmsg', {
         message: data.message,
-        user: users[0]
+        user: data.users
       });
   })
 });

@@ -161,7 +161,6 @@
         function setUsername(){
           socket.emit('setUsername', document.getElementById('login-username').value);
         };
-        var user;
         socket.on('userExists', function(data){
             document.getElementById('error-container').innerHTML = data;
         });

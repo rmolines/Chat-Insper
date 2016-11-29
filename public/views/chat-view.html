@@ -204,14 +204,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
 	  var socket = io();
         var user;
         socket.on('userSet', function(data){
             user = data.username;
-        });
+          });
+
       function sendMessage(){
             var msg = document.getElementById('m').value;
             if(msg){
@@ -228,14 +229,25 @@
             var d = new Date();
             var t = d.getTime();
 
-            var y = Math.round(t / years);
+            function msToTime(s) {
+              var ms = s % 1000;
+              s = (s - ms) / 1000;
+              var secs = s % 60;
+              s = (s - secs) / 60;
+              var mins = s % 60;
+              var hrs = (s - mins) / 60;
 
-            var div1 = $("#div1");
+              return hrs + ':' + mins;
+            }
+
+            var y = Math.round(t / msToTime(d));
+
+            var div1 = $("<li class=' left clearfix'><div class='chat-body1 clearfix'><p>" + data.message + "</p></div></li>");
             var div2 = $("#div2");
             var div3 = $("<li>")
                 if(true){
-                //document.getElementById('message-container').innerHTML += '<div><b>' + data.user + '</b>: ' + data.message + '</div>'
-                //$('#messages').append(div1, div3.data.message,div2, y);
+                $('#messages').append($(div1));
+
         }
         });
     </script>
