@@ -150,8 +150,8 @@
          <div class="col-sm-9 message_section">
 		 <div class="row">
 		 <div class="new_message_head">
-		 <div class="pull-left"><button><i class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button></div><div class="pull-right"><div class="dropdown">
-  <button class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		 <div class="pull-left"><button><i class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button></div>
+     <div class="pull-right"><div class="dropdown"><button class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="fa fa-cogs" aria-hidden="true"></i>  Setting
     <span class="caret"></span>
   </button>
@@ -212,16 +212,23 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-    var socket = io();
-    $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-    });
-    socket.on('chat message', function(msg){
-        $('#messages').append($('<li class="left clearfix"><span class="chat-img1 pull-left"></span><div class="chat-body1 clearfix"><p>').text(msg));
-    });
-    </script> 
-  
+	  var socket = io();
+        var user;
+        socket.on('userSet', function(data){
+            user = data.username;
+        });
+      function sendMessage(){
+            var msg = document.getElementById('m').value;
+            if(msg){
+                socket.emit('msg', {message: msg, user: user});
+            };
+        };
+        socket.on('newmsg', function(data){
+            if(user){
+                //document.getElementById('message-container').innerHTML += '<div><b>' + data.user + '</b>: ' + data.message + '</div>'
+                $('#messages').append($('<li>').text(data.message));
+          };
+        });
+    </script>
   </body>
 </html>
