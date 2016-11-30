@@ -40,27 +40,52 @@ app.get('/login', function(req, res){
   res.sendFile(__dirname + '/public/views/login-view.html');
 });
 
-users = [];
+users = {};
+var defaultRoom = 'Chapecoense';
+var rooms = ["TecWeb", "Luciano", "Camila"];
+
 
 io.on('connection', function(socket){
   console.log('A user connected');
 
+  socket.emit('rooms', {
+    rooms: rooms
+  });
+
   socket.on('setUsername', function(data){
-    if(users.indexOf(data) > -1){
+    if(users.hasOwnProperty(socket.id)){
       socket.emit('userExists', data + ' username is taken! Try some other username.');
     }
     else{
-      users.push(data);
-      socket.emit('userSet', {username: data});
+      data.room = defaultRoom;
+      socket.join(defaultRoom);
+      io.in(defaultRoom).emit('user joined', data);
+      socket.emit('userSet', {username: users[0]});
     }
   })
+
+  socket.on('switch room', function(data) {
+    //Handles joining and leaving rooms
+    //console.log(data);
+    socket.leave(data.oldRoom);
+    socket.join(data.newRoom);
+    io.in(data.oldRoom).emit('user left', data);
+    io.in(data.newRoom).emit('user joined', data);
+
+  });
+
+  socket.on('newUser', function(user){
+    users[socket.id] = user;
+    console.log(users[socket.id]);
+  });
 
     socket.on('msg', function(data){
       //Send message to everyone
       io.emit('newmsg', {
         message: data.message,
-        user: data.users
+        user: users[socket.id]
       });
+      console.log(users[socket.id]);
   })
 });
 

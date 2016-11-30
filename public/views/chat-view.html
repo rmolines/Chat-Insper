@@ -209,8 +209,11 @@
     <script>
 	  var socket = io();
         var user;
+
         socket.on('userSet', function(data){
             user = data.username;
+            socket.emit('newUser', data.username);
+            alert("Hello! I am an alert box!!");
           });
 
       function sendMessage(){
@@ -229,6 +232,8 @@
             var d = new Date();
             var t = d.getTime();
 
+            alert("Hello! I am an alert box!!");
+  
             function msToTime(s) {
               var ms = s % 1000;
               s = (s - ms) / 1000;
@@ -242,9 +247,8 @@
 
             var y = Math.round(t / msToTime(d));
 
-            var div1 = $("<li class=' left clearfix'><div class='chat-body1 clearfix'><p>" + data.message + "</p></div></li>");
-            var div2 = $("#div2");
-            var div3 = $("<li>")
+            var divmsg = "<li class=' left clearfix'><div class='chat-body1 clearfix'><p>";
+            var div1 = $(divmsg + data.user + " says: " + data.message + "</p></div></li>");
                 if(true){
                 $('#messages').append($(div1));
 
