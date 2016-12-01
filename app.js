@@ -17,15 +17,6 @@ app.set('port', process.env.PORT || 6001);
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var sessionMiddleware = session({
-    secret: "keyboard cat",
-});
-
-io.use(function(socket, next) {
-    sessionMiddleware(socket.request, socket.request.res, next);
-});
-
-app.use(sessionMiddleware);
 
 app.get('/chat', function(req, res){
   res.sendFile(__dirname + '/public/views/chat-view.html');
@@ -35,15 +26,14 @@ app.get('/login', function(req, res){
   res.sendFile(__dirname + '/public/views/login-view.html');
 });
 
-users = {};
+var users = {};
+var clients = [];
 var defaultRoom = 'Chapecoense';
 var rooms = ["TecWeb", "Luciano", "Camila"];
 
 
 
 io.on('connection', function(socket){
-  socket.request.session;
-  var sess = socket.request.session;
 
 
   socket.on('setUsername', function(data){
@@ -75,16 +65,15 @@ io.on('connection', function(socket){
   });
 
   socket.on('newUser', function(user){
-    sess.user = user.user;
-    sess.room = user.room;
-    console.log(sess.user);
+    users[session.id] = { user: user.user, room: user.room };
+    clients.push(socket);
   });
 
     socket.on('msg', function(data){
       //Send message to everyone
       io.emit('newmsg', {
         message: data.message,
-        user: sess.user
+        user : users[session.id].user
       });
   });
 });
