@@ -34,113 +34,13 @@
                </button>
                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                   <li><a href="#"> All Conversation </a>  <ul class="sub_menu_ list-unstyled">
-                  <li><a href="#"> All Conversation </a> </li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li><a href="#">Separated link</a></li>
                </ul>
 			   </li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li><a href="#">Separated link</a></li>
                </ul>
             </div>
             <div class="member_list">
                <ul class="list-unstyled">
-                 <li>
-                   <p>hey</p>
-                 </li>
-                  <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
-                  <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right ">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
-                  <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
-                          <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
-                          <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
-                          <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
-                          <li class="left clearfix">
-                     <span class="chat-img pull-left">
-                     </span>
-                     <div class="chat-body clearfix">
-                        <div class="header_sec">
-                           <strong class="primary-font">Jack Sparrow</strong> <strong class="pull-right">
-                           09:45AM</strong>
-                        </div>
-                        <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
-                        </div>
-                     </div>
-                  </li>
+                
                </ul>
             </div></div>
          </div>
@@ -213,7 +113,6 @@
         socket.on('userSet', function(data){
             user = data.username;
             socket.emit('newUser', data.username);
-            alert("Hello! I am an alert box!!");
           });
 
       function sendMessage(){
@@ -223,6 +122,15 @@
                 $('#m').val('');
             };
         };
+        
+        socket.emit('user-request');
+
+        socket.on('userId', function(user){
+          socket.emit('newUser', {
+            user: user,
+            id: socket.id
+          });
+        });
 
         socket.on('newmsg', function(data){
             var minutes = 1000 * 60;
@@ -232,7 +140,6 @@
             var d = new Date();
             var t = d.getTime();
 
-            alert("Hello! I am an alert box!!");
   
             function msToTime(s) {
               var ms = s % 1000;

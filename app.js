@@ -1,29 +1,14 @@
-/*eslint-env node*/
-
-//------------------------------------------------------------------------------
-// node.js starter application for Bluemix
-//------------------------------------------------------------------------------
-
-// This application uses express as its web server
-// for more info, see: http://expressjs.com
 var express = require('express');
-
-// cfenv provides access to your Cloud Foundry environment
-// for more info, see: https://www.npmjs.com/package/cfenv
 var cfenv = require('cfenv');
-
-// create a new express server
 var app = express();
-
-// serve the files out of ./public as our main files
-app.use(express.static(__dirname + '/public'));
-
-// get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
+var session = require("express-session");
+var RedisStore = require("connect-redis")(session);
+var http = require('http').createServer(app);
 
-// start server on the specified port and binding host
+
+app.use(express.static(__dirname + '/public'));
 app.listen(appEnv.port, '0.0.0.0', function() {
-  // print a message when the server starts listening
   console.log("server starting on " + appEnv.url);
 });
 
@@ -31,6 +16,16 @@ app.set('port', process.env.PORT || 6001);
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
+var sessionMiddleware = session({
+    secret: "keyboard cat",
+});
+
+io.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});
+
+app.use(sessionMiddleware);
 
 app.get('/chat', function(req, res){
   res.sendFile(__dirname + '/public/views/chat-view.html');
@@ -45,24 +40,25 @@ var defaultRoom = 'Chapecoense';
 var rooms = ["TecWeb", "Luciano", "Camila"];
 
 
-io.on('connection', function(socket){
-  console.log('A user connected');
 
-  socket.emit('rooms', {
-    rooms: rooms
-  });
+io.on('connection', function(socket){
+  socket.request.session;
+  var sess = socket.request.session;
+
 
   socket.on('setUsername', function(data){
     if(users.hasOwnProperty(socket.id)){
       socket.emit('userExists', data + ' username is taken! Try some other username.');
-    }
+      console.log('deu ruim');
+      }
     else{
-      data.room = defaultRoom;
-      socket.join(defaultRoom);
-      io.in(defaultRoom).emit('user joined', data);
+      // data.room = defaultRoom;
+      //socket.join(defaultRoom);
+      //io.in(defaultRoom).emit('user joined', data);
       socket.emit('userSet', {username: users[0]});
+      console.log(users[0]);
     }
-  })
+  });
 
   socket.on('switch room', function(data) {
     //Handles joining and leaving rooms
@@ -74,19 +70,23 @@ io.on('connection', function(socket){
 
   });
 
+  socket.on('room-request', function(){
+    socket.emit('rooms', rooms);    
+  });
+
   socket.on('newUser', function(user){
-    users[socket.id] = user;
-    console.log(users[socket.id]);
+    sess.user = user.user;
+    sess.room = user.room;
+    console.log(sess.user);
   });
 
     socket.on('msg', function(data){
       //Send message to everyone
       io.emit('newmsg', {
         message: data.message,
-        user: users[socket.id]
+        user: sess.user
       });
-      console.log(users[socket.id]);
-  })
+  });
 });
 
 http.listen(6001, function(){
