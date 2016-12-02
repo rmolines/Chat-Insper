@@ -16,9 +16,9 @@
 <div class="main_section">
    <div class="container">
       		 
-         <div class="col-sm-9 message_section">
+         <div class="col-sm-9 message_section">   
 		 <div class="row">
-		 <div class="new_message_head">
+		 <div class="new_message_head"  id='sala'>
 		 <div class="pull-left"></div>
      <div class="pull-right"><div class="dropdown">
   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
@@ -53,6 +53,8 @@
 	  var socket = io();
         var user;
         var people = {};
+
+        socket.emit('joined');
         
         socket.on('id', function(id) {
           
@@ -79,6 +81,14 @@
           });
         });
 
+        socket.on('join-message', function(data){
+            var divmsg = "<li class=' left clearfix'><div class='chat-body1 clearfix'><p>";
+            var div1 = data.message + "</p>";
+            var div3 = div1;
+            $('#messages').append(div3);
+            $('#salas').before('<h3>' + data.roommessage + '</h3>');
+        })
+
         socket.on('newmsg', function(data){
             var d = new Date();
             var h = d.getHours();
@@ -98,11 +108,8 @@
             var div1 = divmsg + data.user + " says: " + data.message + "</p>";
             var div2 = '<div class="chat_time pull-right">' + h + ':' + m + '</div></div></li>';
             var div3 = div1 + div2;
-                if(true){
-                $('#messages').append(div3);
-
-        }
-        });
+            $('#messages').append(div3);
+         });
     </script>
   </body> 
 </html>

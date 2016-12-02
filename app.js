@@ -29,7 +29,7 @@ app.get('/login', function(req, res){
 var users = {};
 var clients = [];
 var defaultRoom = 'Chapecoense';
-var rooms = ["TecWeb", "Luciano", "Camila"];
+var rooms = ["Sala Insper", "Sala Luciano", " Sala Camila"];
 
 
 
@@ -48,6 +48,14 @@ io.on('connection', function(socket){
       socket.emit('userSet', {username: users[0]});
       console.log(users[0]);
     }
+  });
+
+  socket.on('joined', function(){
+    socket.join(users[session.id].room);
+    io.sockets.in(users[session.id].room).emit('join-message', {
+      message: users[session.id].user + ' juntou-se à sala.',
+      roommessage: 'Você está na ' + rooms[users[session.id].room]
+    });
   });
 
   socket.on('switch room', function(data) {
@@ -71,7 +79,7 @@ io.on('connection', function(socket){
 
     socket.on('msg', function(data){
       //Send message to everyone
-      io.emit('newmsg', {
+      io.sockets.in(users[session.id].room).emit('newmsg', {
         message: data.message,
         user : users[session.id].user
       });
